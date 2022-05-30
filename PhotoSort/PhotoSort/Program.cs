@@ -1,8 +1,8 @@
 ﻿// =================================================================
 
-const bool verbose = true;
-const string sourcePath = "c:\\sample";
-const string targetPath = "c:\\photos";
+const bool verbose = false;
+const string sourcePath = "H:\\Photos-Source";
+const string targetPath = "H:\\Photos";
 
 // Index source files
 var files = new List<FileInfo>();
@@ -13,6 +13,20 @@ Console.WriteLine(string.Empty);
 var duplicates = GetDuplicates(files).ToList();
 files = files.Except(duplicates).ToList();
 Console.WriteLine(string.Empty);
+
+// Create new structure
+foreach (var file in files)
+{
+    var timestamp = file.LastWriteTime;
+    var year = timestamp.Year;
+    var month = timestamp.ToString("MMM");
+    var topPath = Path.Combine(targetPath, year.ToString());
+    var midPath = Path.Combine(topPath, month);
+    if (!Directory.Exists(topPath)) Directory.CreateDirectory(topPath);
+    if (!Directory.Exists(midPath)) Directory.CreateDirectory(midPath);
+
+    File.Copy(file.FullName, Path.Combine(midPath, file.Name), true);
+}
 
 Console.WriteLine($"Duplicates Found: {duplicates.Count()}");
 Console.WriteLine($"Total Files: {files.Count}");
